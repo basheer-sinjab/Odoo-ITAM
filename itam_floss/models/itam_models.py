@@ -108,14 +108,14 @@ class ITAMAsset(models.Model):
     maintenance_ids = fields.One2many("itam.maintenance", "asset_id")
     pc_spec_ids = fields.One2many("itam.pc.spec", "asset_id")
 
-    _sql_constraints = [
-        ("itam_asset_code_unique", "unique(asset_id)", "The asset ID must be unique."),
-        (
-            "itam_asset_serial_unique",
-            "unique(serial_number)",
-            "The serial number is already assigned to another asset.",
-        ),
-    ]
+    _itam_asset_code_unique = models.Constraint(
+        "UNIQUE(asset_id)",
+        "The asset ID must be unique.",
+    )
+    _itam_asset_serial_unique = models.Constraint(
+        "UNIQUE(serial_number)",
+        "The serial number is already assigned to another asset.",
+    )
 
     @api.model_create_multi
     def create(self, values_list):
@@ -454,14 +454,14 @@ class ITAMInventoryItem(models.Model):
     image_url = fields.Char()
     notes = fields.Text()
 
-    _sql_constraints = [
-        ("itam_inventory_quantity_nonnegative", "CHECK(quantity >= 0)", "Quantity cannot be negative."),
-        (
-            "itam_inventory_minimum_nonnegative",
-            "CHECK(minimum_quantity >= 0)",
-            "Minimum quantity cannot be negative.",
-        ),
-    ]
+    _itam_inventory_quantity_nonnegative = models.Constraint(
+        "CHECK(quantity >= 0)",
+        "Quantity cannot be negative.",
+    )
+    _itam_inventory_minimum_nonnegative = models.Constraint(
+        "CHECK(minimum_quantity >= 0)",
+        "Minimum quantity cannot be negative.",
+    )
 
     @api.constrains("category", "color")
     def _check_toner_color(self):
@@ -512,14 +512,14 @@ class ITAMMaintenance(models.Model):
     source_type = fields.Char()
     source_id = fields.Char()
 
-    _sql_constraints = [
-        (
-            "itam_maintenance_reference_unique",
-            "unique(reference_number)",
-            "The maintenance reference must be unique.",
-        ),
-        ("itam_maintenance_cost_nonnegative", "CHECK(cost >= 0)", "Cost cannot be negative."),
-    ]
+    _itam_maintenance_reference_unique = models.Constraint(
+        "UNIQUE(reference_number)",
+        "The maintenance reference must be unique.",
+    )
+    _itam_maintenance_cost_nonnegative = models.Constraint(
+        "CHECK(cost >= 0)",
+        "Cost cannot be negative.",
+    )
 
     @api.model_create_multi
     def create(self, values_list):
@@ -552,9 +552,10 @@ class ITAMInventoryMovement(models.Model):
         "itam.maintenance", ondelete="set null", index=True
     )
 
-    _sql_constraints = [
-        ("quantity_nonnegative", "CHECK(quantity >= 0)", "Quantity cannot be negative.")
-    ]
+    _quantity_nonnegative = models.Constraint(
+        "CHECK(quantity >= 0)",
+        "Quantity cannot be negative.",
+    )
 
 
 class ITAMPCSpec(models.Model):
@@ -573,9 +574,10 @@ class ITAMPCSpec(models.Model):
     display_technology = fields.Char()
     notes = fields.Text()
 
-    _sql_constraints = [
-        ("itam_pc_spec_asset_unique", "unique(asset_id)", "Specifications already exist for this asset.")
-    ]
+    _itam_pc_spec_asset_unique = models.Constraint(
+        "UNIQUE(asset_id)",
+        "Specifications already exist for this asset.",
+    )
 
 
 class ITAMPCPartInstallation(models.Model):
@@ -629,9 +631,10 @@ class ITAMTonerInstallation(models.Model):
         "itam.maintenance", ondelete="set null", index=True
     )
 
-    _sql_constraints = [
-        ("quantity_positive", "CHECK(quantity > 0)", "Quantity must be greater than zero.")
-    ]
+    _quantity_positive = models.Constraint(
+        "CHECK(quantity > 0)",
+        "Quantity must be greater than zero.",
+    )
 
 
 class ITAMLicense(models.Model):
@@ -650,9 +653,10 @@ class ITAMLicense(models.Model):
     image_url = fields.Char()
     assignment_ids = fields.One2many("itam.license.assignment", "license_id")
 
-    _sql_constraints = [
-        ("itam_license_seat_count_nonnegative", "CHECK(seat_count >= 0)", "Seat count cannot be negative.")
-    ]
+    _itam_license_seat_count_nonnegative = models.Constraint(
+        "CHECK(seat_count >= 0)",
+        "Seat count cannot be negative.",
+    )
 
     @api.constrains("seat_count")
     def _check_assigned_seats(self):
@@ -713,9 +717,10 @@ class ITAMSettings(models.Model):
     dashboard_alerts_enabled = fields.Boolean(default=True)
     warranty_alert_days = fields.Integer(required=True, default=30)
 
-    _sql_constraints = [
-        ("itam_settings_name_unique", "unique(name)", "Only one settings record is allowed.")
-    ]
+    _itam_settings_name_unique = models.Constraint(
+        "UNIQUE(name)",
+        "Only one settings record is allowed.",
+    )
 
 
 class ITAMImage(models.Model):

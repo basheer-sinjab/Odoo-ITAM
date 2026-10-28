@@ -944,9 +944,8 @@ class ITAMFlossService(models.AbstractModel):
                 ),
                 "maintenance_type": values.get("maintenance_type") or "Corrective",
                 "status": "Open" if values.get("status") == "Open" else "Closed",
-                "technician": (
-                    maintenance.technician if maintenance else self.env.user.name
-                )
+                "technician": (values.get("technician") or "").strip()
+                or (maintenance.technician if maintenance else self.env.user.name)
                 or self.env.user.name,
                 "cost": max(0, float(values.get("cost") or 0)),
                 "problem_description": values.get("problem_description") or False,
